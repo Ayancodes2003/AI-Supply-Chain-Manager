@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import os
 import numpy as np
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 # Import utility functions
 from utils.data_loader import load_data, get_regions, get_categories, filter_data
@@ -30,6 +31,14 @@ from utils.auth import setup_auth, check_auth, get_user_role, save_user_preferen
 from utils.data_upload import upload_data, list_available_datasets, load_selected_dataset
 from utils.customization import customize_dashboard, apply_theme, get_chart_template, create_chart
 from utils.time_series import generate_time_series_data, create_time_series_chart, perform_seasonal_decomposition
+
+# Import ML analytics modules
+from utils.ml_analytics import (
+    perform_regression_analysis,
+    perform_decision_tree_analysis,
+    perform_clustering_analysis,
+    perform_what_if_analysis
+)
 
 # Set page configuration
 st.set_page_config(
@@ -135,7 +144,7 @@ def main():
     st.sidebar.markdown("## Navigation")
 
     # Define available pages
-    available_pages = ["Dashboard", "Advanced Analytics", "Time Series Analysis", "Data Upload"]
+    available_pages = ["Dashboard", "Advanced Analytics", "Time Series Analysis", "ML Analytics", "Data Upload"]
 
     # Get default view from user preferences, fallback to 'Dashboard' if not found
     default_view = user_prefs.get('default_view', 'Dashboard')
@@ -187,6 +196,10 @@ def main():
     # Time Series Analysis Page
     elif page == "Time Series Analysis":
         display_time_series_analysis(filtered_df, user_prefs)
+
+    # ML Analytics Page
+    elif page == "ML Analytics":
+        display_ml_analytics(filtered_df, user_prefs)
 
     # Data Upload Page
     elif page == "Data Upload":
@@ -540,6 +553,269 @@ def display_time_series_analysis(filtered_df, user_prefs):
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Not enough data to generate a forecast.")
+
+# ML Analytics page
+def display_ml_analytics(filtered_df, user_prefs):
+    st.markdown('<div class="sub-header">Machine Learning Analytics</div>', unsafe_allow_html=True)
+
+    # Get chart template based on theme
+    template = get_chart_template(user_prefs.get('theme', 'Light'))
+
+    # Tabs for different ML analytics
+    tab1, tab2, tab3, tab4 = st.tabs(["Regression Analysis", "Decision Tree Analysis", "Clustering", "What-If Analysis"])
+
+    # Regression Analysis Tab
+    with tab1:
+        st.subheader("Regression Analysis")
+        st.markdown("Analyze relationships between variables using linear regression.")
+
+        # Select columns for regression
+        numeric_cols = filtered_df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+        if len(numeric_cols) < 2:
+            st.error("Not enough numeric columns for regression analysis.")
+        else:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                target_col = st.selectbox("Select Target Variable", options=numeric_cols, index=0)
+
+            with col2:
+                feature_cols = st.multiselect(
+                    "Select Feature Variables",
+                    options=[col for col in numeric_cols if col != target_col],
+                    default=[numeric_cols[1]] if len(numeric_cols) > 1 else []
+                )
+
+            if feature_cols and st.button("Run Regression Analysis"):
+                # Perform regression analysis
+                regression_results = perform_regression_analysis(filtered_df, target_col, feature_cols)
+
+                if regression_results['success']:
+                    # Display regression metrics
+                    st.subheader("Regression Metrics")
+                    metrics = regression_results['metrics']
+
+                    metrics_col1, metrics_col2 = st.columns(2)
+                    with metrics_col1:
+                        st.metric("R² (Training)", f"{metrics['train_r2']:.4f}")
+                        st.metric("MSE (Training)", f"{metrics['train_mse']:.4f}")
+
+                    with metrics_col2:
+                        st.metric("R² (Testing)", f"{metrics['test_r2']:.4f}")
+                        st.metric("MSE (Testing)", f"{metrics['test_mse']:.4f}")
+
+                    # Display coefficients
+                    st.subheader("Regression Coefficients")
+                    st.write(f"Intercept: {metrics['intercept']:.4f}")
+                    st.dataframe(regression_results['coefficients'])
+
+                    # Display plot
+                    st.subheader("Actual vs Predicted Values")
+                    st.plotly_chart(regression_results['plot'], use_container_width=True)
+
+                    # Regression equation
+                    equation = f"{target_col} = {metrics['intercept']:.4f}"
+                    for i, row in regression_results['coefficients'].iterrows():
+                        sign = "+" if row['Coefficient'] >= 0 else ""
+                        equation += f" {sign} {row['Coefficient']:.4f} × {row['Feature']}"
+
+                    st.subheader("Regression Equation")
+                    st.markdown(f"```{equation}```")
+                else:
+                    st.error(regression_results['message'])
+
+    # Decision Tree Analysis Tab
+    with tab2:
+        st.subheader("Decision Tree Analysis")
+        st.markdown("Analyze data using decision trees for better interpretability.")
+
+        # Select columns for decision tree
+        numeric_cols = filtered_df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+        if len(numeric_cols) < 2:
+            st.error("Not enough numeric columns for decision tree analysis.")
+        else:
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                target_col = st.selectbox("Select Target Variable", options=numeric_cols, index=0, key="dt_target")
+
+            with col2:
+                feature_cols = st.multiselect(
+                    "Select Feature Variables",
+                    options=[col for col in numeric_cols if col != target_col],
+                    default=[numeric_cols[1]] if len(numeric_cols) > 1 else [],
+                    key="dt_features"
+                )
+
+            with col3:
+                max_depth = st.slider("Maximum Tree Depth", min_value=1, max_value=10, value=3)
+
+            if feature_cols and st.button("Run Decision Tree Analysis"):
+                # Perform decision tree analysis
+                dt_results = perform_decision_tree_analysis(filtered_df, target_col, feature_cols, max_depth)
+
+                if dt_results['success']:
+                    # Display metrics
+                    st.subheader("Decision Tree Metrics")
+                    metrics = dt_results['metrics']
+
+                    metrics_col1, metrics_col2 = st.columns(2)
+                    with metrics_col1:
+                        st.metric("R² (Training)", f"{metrics['train_r2']:.4f}")
+                        st.metric("MSE (Training)", f"{metrics['train_mse']:.4f}")
+
+                    with metrics_col2:
+                        st.metric("R² (Testing)", f"{metrics['test_r2']:.4f}")
+                        st.metric("MSE (Testing)", f"{metrics['test_mse']:.4f}")
+
+                    # Display feature importance
+                    st.subheader("Feature Importance")
+                    st.dataframe(dt_results['feature_importance'])
+
+                    # Display decision tree visualization
+                    st.subheader("Decision Tree Visualization")
+                    st.image(f"data:image/png;base64,{dt_results['tree_image']}")
+
+                    # Display tree rules
+                    st.subheader("Decision Tree Rules")
+                    st.code(dt_results['tree_rules'])
+                else:
+                    st.error(dt_results['message'])
+
+    # Clustering Tab
+    with tab3:
+        st.subheader("Clustering Analysis")
+        st.markdown("Group similar data points together using K-means clustering.")
+
+        # Select columns for clustering
+        numeric_cols = filtered_df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+        if len(numeric_cols) < 2:
+            st.error("Not enough numeric columns for clustering analysis.")
+        else:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                feature_cols = st.multiselect(
+                    "Select Features for Clustering",
+                    options=numeric_cols,
+                    default=numeric_cols[:2] if len(numeric_cols) >= 2 else []
+                )
+
+            with col2:
+                n_clusters = st.slider("Number of Clusters", min_value=2, max_value=10, value=3)
+
+            if len(feature_cols) >= 2 and st.button("Run Clustering Analysis"):
+                # Perform clustering analysis
+                clustering_results = perform_clustering_analysis(filtered_df, feature_cols, n_clusters)
+
+                if clustering_results['success']:
+                    # Display cluster visualization
+                    st.subheader("Cluster Visualization")
+                    if clustering_results['plot']:
+                        st.plotly_chart(clustering_results['plot'], use_container_width=True)
+                    else:
+                        st.info("Could not create cluster visualization.")
+
+                    # Display cluster centers
+                    st.subheader("Cluster Centers")
+                    st.dataframe(clustering_results['cluster_centers'])
+
+                    # Display cluster statistics
+                    st.subheader("Cluster Statistics")
+                    st.dataframe(clustering_results['cluster_stats'])
+
+                    # Display clustered data sample
+                    st.subheader("Clustered Data Sample")
+                    st.dataframe(clustering_results['clustered_data'].head(10))
+                else:
+                    st.error(clustering_results['message'])
+
+    # What-If Analysis Tab
+    with tab4:
+        st.subheader("What-If Analysis")
+        st.markdown("Predict outcomes by changing input values.")
+
+        # First, need to have a trained model
+        st.info("First, train a regression model to use for what-if analysis.")
+
+        # Select columns for regression
+        numeric_cols = filtered_df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+
+        if len(numeric_cols) < 2:
+            st.error("Not enough numeric columns for what-if analysis.")
+        else:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                target_col = st.selectbox("Select Target Variable", options=numeric_cols, index=0, key="wi_target")
+
+            with col2:
+                feature_cols = st.multiselect(
+                    "Select Feature Variables",
+                    options=[col for col in numeric_cols if col != target_col],
+                    default=[numeric_cols[1]] if len(numeric_cols) > 1 else [],
+                    key="wi_features"
+                )
+
+            if feature_cols and st.button("Train Model for What-If Analysis"):
+                # Train regression model
+                regression_results = perform_regression_analysis(filtered_df, target_col, feature_cols)
+
+                if regression_results['success']:
+                    st.session_state['what_if_model'] = regression_results['model']
+                    st.session_state['what_if_features'] = feature_cols
+                    st.session_state['what_if_target'] = target_col
+                    st.success("Model trained successfully! Now you can perform what-if analysis.")
+                else:
+                    st.error(regression_results['message'])
+
+            # What-if analysis section
+            if 'what_if_model' in st.session_state:
+                st.markdown("---")
+                st.subheader("Adjust Feature Values")
+
+                # Create sliders for each feature
+                what_if_values = {}
+                for feature in st.session_state['what_if_features']:
+                    min_val = float(filtered_df[feature].min())
+                    max_val = float(filtered_df[feature].max())
+                    mean_val = float(filtered_df[feature].mean())
+
+                    step = (max_val - min_val) / 100
+                    what_if_values[feature] = st.slider(
+                        f"{feature}",
+                        min_value=min_val,
+                        max_value=max_val,
+                        value=mean_val,
+                        step=step
+                    )
+
+                if st.button("Predict"):
+                    # Perform what-if analysis
+                    what_if_results = perform_what_if_analysis(
+                        filtered_df,
+                        st.session_state['what_if_model'],
+                        st.session_state['what_if_features'],
+                        st.session_state['what_if_target'],
+                        what_if_values
+                    )
+
+                    if what_if_results['success']:
+                        # Display prediction
+                        st.subheader("Prediction Result")
+                        st.metric(
+                            f"Predicted {what_if_results['target_col']}",
+                            f"{what_if_results['prediction']:.4f}"
+                        )
+
+                        # Display comparison with original data
+                        st.subheader("Comparison with Original Data")
+                        st.dataframe(what_if_results['comparison'])
+                    else:
+                        st.error(what_if_results['message'])
 
 # Data Upload page
 def display_data_upload_page(user_role):

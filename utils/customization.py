@@ -38,7 +38,7 @@ def customize_dashboard():
     # Default view
     default_view = st.sidebar.selectbox(
         "Default View",
-        options=["Dashboard", "Advanced Analytics", "Time Series Analysis", "Data Upload"],
+        options=["Dashboard", "Advanced Analytics", "Time Series Analysis", "ML Analytics", "Data Upload"],
         index=0
     )
 

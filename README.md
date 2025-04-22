@@ -30,6 +30,12 @@ This dashboard helps businesses:
   - Seasonal decomposition
   - Future demand forecasting
 
+- **Machine Learning Analytics**
+  - Regression analysis with metrics and visualizations
+  - Decision tree analysis with feature importance
+  - Clustering analysis for data segmentation
+  - What-if analysis for scenario planning
+
 - **User Experience**
   - User authentication with admin/user roles
   - Dashboard customization (themes, chart types, layout)
@@ -67,6 +73,7 @@ The dashboard uses FMCG sales and warehouse data stored in CSV format in the `da
   - `data_processor.py`: KPI calculation and data preparation
   - `advanced_analytics.py`: Anomaly detection, segmentation, and optimization
   - `time_series.py`: Time series analysis and forecasting
+  - `ml_analytics.py`: Machine learning models and what-if analysis
   - `auth.py`: User authentication and session management
   - `data_upload.py`: Data upload and management
   - `customization.py`: Dashboard customization options
