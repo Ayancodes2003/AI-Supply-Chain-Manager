@@ -12,11 +12,28 @@ This dashboard helps businesses:
 
 ## Features
 
+### Basic Features
 - Region and category filters
-- Date range selection
 - Key performance indicators
 - Interactive visualizations
 - Data export functionality
+
+### Enhanced Features
+- **Advanced Analytics**
+  - Anomaly detection to identify unusual patterns
+  - Warehouse segmentation for performance analysis
+  - Regional performance heatmap
+  - Data-driven optimization recommendations
+
+- **Time Series Analysis**
+  - Sales trend visualization
+  - Seasonal decomposition
+  - Future demand forecasting
+
+- **User Experience**
+  - User authentication with admin/user roles
+  - Dashboard customization (themes, chart types, layout)
+  - Data upload functionality for admins
 
 ## Installation
 
@@ -45,8 +62,19 @@ The dashboard uses FMCG sales and warehouse data stored in CSV format in the `da
 ## Project Structure
 
 - `app.py`: Main Streamlit application
-- `utils/`: Helper functions for data processing
+- `utils/`: Helper functions and modules
+  - `data_loader.py`: Data loading and filtering functions
+  - `data_processor.py`: KPI calculation and data preparation
+  - `advanced_analytics.py`: Anomaly detection, segmentation, and optimization
+  - `time_series.py`: Time series analysis and forecasting
+  - `auth.py`: User authentication and session management
+  - `data_upload.py`: Data upload and management
+  - `customization.py`: Dashboard customization options
 - `assets/`: Images and other static assets
 - `data/`: CSV data files
+  - `uploads/`: User-uploaded data files
+- `config/`: Configuration files
+  - `auth.yaml`: User credentials and authentication settings
+  - `preferences/`: User preference files
 - `requirements.txt`: Project dependencies
 - `README.md`: Project documentation
