@@ -14,8 +14,8 @@ def setup_auth():
     class SimpleAuthenticator:
         def __init__(self):
             self.users = {
-                'admin': {'password': 'admin', 'name': 'Admin User'},
-                'user': {'password': 'password', 'name': 'Regular User'}
+                'admin': {'password': 'admin', 'name': 'Admin User', 'role': 'admin'},
+                'user': {'password': 'password', 'name': 'Regular User', 'role': 'user'}
             }
 
         def logout(self, button_name, location):
@@ -23,6 +23,7 @@ def setup_auth():
                 st.session_state['authentication_status'] = None
                 st.session_state['username'] = None
                 st.session_state['name'] = None
+                st.session_state['user_role'] = None
                 st.rerun()
 
     # Create config directory if it doesn't exist
@@ -37,6 +38,8 @@ def setup_auth():
         st.session_state['username'] = None
     if 'name' not in st.session_state:
         st.session_state['name'] = None
+    if 'user_role' not in st.session_state:
+        st.session_state['user_role'] = None
 
     # Create authenticator
     authenticator = SimpleAuthenticator()
@@ -49,9 +52,16 @@ def setup_auth():
 
         if st.button('Login'):
             if username in authenticator.users and authenticator.users[username]['password'] == password:
+                # Store user information in session state
                 st.session_state['authentication_status'] = True
                 st.session_state['username'] = username
                 st.session_state['name'] = authenticator.users[username]['name']
+                st.session_state['user_role'] = authenticator.users[username]['role']
+
+                # Debug information
+                st.write(f"Debug: Setting username to '{username}'")
+                st.write(f"Debug: Setting user role to '{authenticator.users[username]['role']}'")
+
                 st.rerun()
             else:
                 st.session_state['authentication_status'] = False
@@ -79,12 +89,24 @@ def get_user_role():
     Returns:
         str: 'admin' or 'user'
     """
+    # Check if user_role is directly available in session state
+    if 'user_role' in st.session_state and st.session_state['user_role']:
+        role = st.session_state['user_role']
+        st.sidebar.markdown(f"**Debug Info:** User role from session = '{role}'")
+        return role
+
+    # Fallback to checking username
     if 'username' not in st.session_state:
         return None
 
+    # Get the username from session state
     username = st.session_state['username']
 
-    if username == 'admin':
+    # Debug information
+    st.sidebar.markdown(f"**Debug Info:** Username = '{username}'")
+
+    # Check if the username is 'admin' (case insensitive)
+    if username and username.lower() == 'admin':
         return 'admin'
     else:
         return 'user'

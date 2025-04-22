@@ -821,6 +821,9 @@ def display_ml_analytics(filtered_df, user_prefs):
 def display_data_upload_page(user_role):
     st.markdown('<div class="sub-header">Data Management</div>', unsafe_allow_html=True)
 
+    # Debug information
+    st.write(f"Current user role: '{user_role}'")
+
     # Only allow admin users to upload data
     if user_role == 'admin':
         # Data upload section
@@ -830,7 +833,7 @@ def display_data_upload_page(user_role):
         if uploaded_df is not None:
             st.success("Data uploaded successfully! You can now use it in the dashboard.")
     else:
-        st.warning("You need admin privileges to upload new data.")
+        st.warning(f"You need admin privileges to upload new data. Your current role is '{user_role}'.")
 
     # List available datasets
     st.subheader("Available Datasets")
