@@ -133,10 +133,22 @@ def main():
 
     # Navigation
     st.sidebar.markdown("## Navigation")
+
+    # Define available pages
+    available_pages = ["Dashboard", "Advanced Analytics", "Time Series Analysis", "Data Upload"]
+
+    # Get default view from user preferences, fallback to 'Dashboard' if not found
+    default_view = user_prefs.get('default_view', 'Dashboard')
+
+    # Make sure the default view is in the available pages
+    if default_view not in available_pages:
+        default_view = 'Dashboard'
+
+    # Create the navigation radio buttons
     page = st.sidebar.radio(
         "Go to",
-        ["Dashboard", "Advanced Analytics", "Time Series Analysis", "Data Upload"],
-        index=["Dashboard", "Advanced Analytics", "Time Series Analysis", "Data Upload"].index(user_prefs.get('default_view', 'Dashboard'))
+        available_pages,
+        index=available_pages.index(default_view)
     )
 
     # Load data
