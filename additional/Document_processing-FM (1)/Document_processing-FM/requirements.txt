@@ -1,0 +1,14 @@
+streamlit
+openai
+pdf2image
+pytesseract
+pillow
+pandas
+numpy
+opencv-python
+PyMuPDF
+paddleocr
+scikit-image
+
+paddlepaddle --extra-index-url https://pypi.org/simple
+setuptools>=68.0.0

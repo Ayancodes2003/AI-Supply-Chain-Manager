@@ -144,7 +144,15 @@ def main():
     st.sidebar.markdown("## Navigation")
 
     # Define available pages
-    available_pages = ["Dashboard", "Advanced Analytics", "Time Series Analysis", "ML Analytics", "Data Upload"]
+    available_pages = [
+        "Document Extraction (PDF to CSV)",
+        "HITL Verification (PDF + CSV)",
+        "Dashboard",
+        "Advanced Analytics",
+        "Time Series Analysis",
+        "ML Analytics",
+        "Data Upload"
+    ]
 
     # Get default view from user preferences, fallback to 'Dashboard' if not found
     default_view = user_prefs.get('default_view', 'Dashboard')
@@ -185,8 +193,16 @@ def main():
     # Apply filters
     filtered_df = filter_data(df, regions=selected_regions, categories=selected_categories)
 
-    # Main Dashboard Page
-    if page == "Dashboard":
+    # In the main function, add logic for the new pages
+    if page == "Document Extraction (PDF to CSV)":
+        from additional.main import main as extraction_main
+        extraction_main()
+
+    elif page == "HITL Verification (PDF + CSV)":
+        from additional.HITLmain import main as hitl_main
+        hitl_main()
+
+    elif page == "Dashboard":
         display_dashboard(filtered_df, user_prefs)
 
     # Advanced Analytics Page

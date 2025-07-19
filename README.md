@@ -87,3 +87,31 @@ The dashboard uses FMCG sales and warehouse data stored in CSV format in the `da
   - `preferences/`: User preference files
 - `requirements.txt`: Project dependencies
 - `README.md`: Project documentation
+
+## Extended Workflow (Human-in-the-Loop + AI Extraction)
+
+This project now supports a full pipeline for document-based analytics:
+
+1. **Document Extraction (PDF to CSV using Gemini AI)**
+   - Upload PDF invoices.
+   - OCR and AI (Gemini) extract structured data into CSV.
+   - Download or proceed to verification.
+
+2. **Human-in-the-Loop (HITL) Verification**
+   - Upload PDFs and the extracted CSV.
+   - Visually verify and correct extracted data (bounding boxes, highlights).
+   - Download the verified CSV.
+
+3. **Dashboard Analytics**
+   - Upload or select any CSV (including verified ones) for full analytics and insights.
+
+### AI Model
+- Uses Google Gemini API for document understanding and extraction (replaceable with other LLMs).
+
+### How to Use
+- Run the app and use the sidebar to navigate:
+  1. Document Extraction (PDF to CSV)
+  2. HITL Verification (PDF + CSV)
+  3. Dashboard (analytics)
+
+All steps are integrated into a single Streamlit app for seamless workflow.

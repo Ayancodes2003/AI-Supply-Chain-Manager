@@ -1,0 +1,12 @@
+streamlit
+pandas
+pytesseract
+Pillow
+numpy
+opencv-python
+PyMuPDF
+paddleocr
+scikit-image
+fuzzywuzzy
+python-Levenshtein # Required by fuzzywuzzy for faster processing
+streamlit-aggrid
