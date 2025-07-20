@@ -19,7 +19,8 @@ load_dotenv()
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("GEMINI_API_KEY not set in .env file")
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=" + GEMINI_API_KEY
+# Use Gemini 1.5 Flash endpoint for best speed
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY
 
 def gemini_chat_completion(messages, temperature=0.1):
     # messages: list of dicts with 'role' and 'content' (text or image)
