@@ -17,6 +17,6 @@ scikit-image
 Pillow
 python-dotenv
 python-Levenshtein
-scipy
+scipy==1.11.4
 PyMuPDF
 fuzzywuzzy
