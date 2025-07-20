@@ -7,6 +7,8 @@ import os
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Import utility functions
 from utils.data_loader import load_data, get_regions, get_categories, filter_data

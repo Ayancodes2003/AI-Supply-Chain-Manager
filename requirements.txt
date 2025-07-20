@@ -18,3 +18,4 @@ opencv-python
 scikit-image
 Pillow
 python-dotenv
+python-Levenshtein
