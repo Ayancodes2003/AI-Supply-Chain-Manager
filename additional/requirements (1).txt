@@ -1,12 +1,13 @@
-streamlit
-pandas
-pytesseract
-Pillow
-numpy
-opencv-python
-PyMuPDF
-paddleocr
-scikit-image
-fuzzywuzzy
-python-Levenshtein # Required by fuzzywuzzy for faster processing
-streamlit-aggrid
+streamlit==1.32.0
+pandas==2.2.0
+pytesseract==0.3.13
+Pillow==10.4.0
+numpy==1.26.3
+opencv-python==4.11.0.86
+PyMuPDF==1.23.22
+paddleocr==3.1.0
+scikit-image==0.25.2
+scipy==1.11.4
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.27.1
+streamlit-aggrid==1.1.6
