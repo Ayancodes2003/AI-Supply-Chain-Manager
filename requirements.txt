@@ -10,13 +10,10 @@ statsmodels==0.14.1
 prophet==1.1.5
 seaborn==0.13.1
 requests
+paddleocr
 streamlit-aggrid
+PyMuPDF
 pytesseract
 opencv-python
 scikit-image
 Pillow
-python-dotenv
-python-Levenshtein
-scipy==1.11.4
-PyMuPDF
-fuzzywuzzy
